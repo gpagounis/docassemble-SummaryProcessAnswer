@@ -1,0 +1,574 @@
+---
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+  - docassemble.ALMassachusetts:al_massachusetts.yml
+  - docassemble.MassAccess:massaccess.yml
+---
+metadata:
+  title: |
+    Summary Process Answer Form - Housing Court
+  short title: |
+    Summary Process Answer Form
+  tags:
+    - HO-00-00-00-00
+  authors:
+    - Georgiana Pagounis
+---
+mandatory: True
+comment: |
+  Global interview metadata
+variable name: interview_metadata["summary_process_answer"]
+data:
+  al_weaver_version: "1.7.0"
+  generated on: "2022-11-19"
+  title: >-
+    Summary Process Answer Form - Housing Court
+  short title: >-
+    Summary Process Answer Form
+  description: |-
+    This form is used by tenant defendants to respond to a Summons and Complaint for an eviction case in Housing Court.
+  original_form: >-
+    
+  allowed courts: 
+    - "Housing Court"
+  categories:
+    - "HO-00-00-00-00"
+  typical role: "defendant"
+  generate download screen: True
+---
+code: |
+  interview_metadata['main_interview_key'] =  'summary_process_answer'
+---
+code: |
+  # This controls the default country and list of states in address field questions
+  AL_DEFAULT_COUNTRY = "US"
+---
+code: |
+  # This controls the default state in address field questions
+  AL_DEFAULT_STATE = "MA"
+---
+code: |
+  github_repo_name =  'docassemble-SummaryProcessAnswer'
+---
+code: |
+  interview_short_title = "File a Summary Process Answer in Housing Court"
+---
+code: |
+  al_form_type = "existing_case" 
+---
+objects:
+  - other_parties: ALPeopleList
+  - users: ALPeopleList.using(there_are_any=True)
+---
+sections:
+  - review_summary_process_answer: Review your answers
+---
+#################### Interview order #####################
+comment: |
+  Controls order and branching logic for questions specific to this form
+id: interview_order_summary_process_answer
+code: |
+  # Set the allowed courts for this interview
+  allowed_courts = interview_metadata["summary_process_answer"]["allowed courts"]
+  nav.set_section("review_summary_process_answer")
+  user_role = "defendant"
+  users.gather()
+  set_parts(subtitle=str(users))
+  users[0].address.address
+  set_progress(14)
+  other_parties.gather()
+  docket_number
+  trial_date
+  set_progress(28)
+  trial_court.division
+  trial_court.address.address
+  plaintiffs.gather()
+  set_progress(42)
+  other_sp_yes
+  improper_name_yes
+  set_progress(56)
+  withholding_yes
+  defenses_yes
+  Counterclaims
+  set_progress(70)
+  signature_users1
+  interview_order_summary_process_answer = True
+---
+###################### Main order ######################
+comment: |
+  This block includes the logic for standalone interviews.
+  Delete mandatory: True to include in another interview
+mandatory: True
+code: |
+  al_intro_screen
+  summary_process_answer_intro
+  interview_order_summary_process_answer
+  signature_date
+  # Store anonymous data for analytics / statistics
+  store_variables_snapshot(
+      persistent=True,
+      data={
+          "zip": showifdef("users[0].address.zip"),
+          "reached_interview_end": True,
+      },
+  )
+  summary_process_answer_preview_question
+  basic_questions_signature_flow    
+  signature_users1
+  summary_process_answer_download
+---
+comment: |
+  This question is used to introduce your interview. Please customize
+id: Summary_Process_Answer_Form__Housing_Court
+continue button field: summary_process_answer_intro
+question: |
+  Summary Process Answer Form - Housing Court
+subquestion: |
+  This form is the Answer to a Summons and Complaint filed against you in an eviction case in housing court. You should only fill out this form if you have already gotten both a Summons and Complaint and a Notice to Quit from your landlord because you will need information from these two letters to help you complete this form.
+---
+id: Trial date
+question: |
+  Trial date
+subquestion: |
+  You should have a letter from the court that tells you what day and time to go to court.
+fields:
+  - "Date of trial": trial_date
+    datatype: date
+---
+id: About your tenancy
+question: |
+  About your tenancy
+subquestion: |
+  Answer these questions about your tenancy to the best of your ability. Your answers will help determine if you have a possible defense against your landlord in this case.
+fields:
+  - "There is another summary process action against me right now.": other_sp_yes
+    datatype: yesno
+  - "My landlord has not told me they are ending my lease and my lease is not expired.": unexpired_yes
+    datatype: yesno
+  - "My landlord has not told me to leave the property and I do not have a written lease.": unwritten_yes
+    datatype: yesno
+  - "If I have ever owed my landlord any rent, I have paid it within the time required by law.": paid_rent_yes
+    datatype: yesno
+  - "There are other people this case should be brought against.": other_parties_yes
+    datatype: yesno
+---
+id: About your case
+question: |
+  About your case
+subquestion: |
+  Answer these questions about how you were notified about this case. Only a judge can decide if your landlord did not follow the proper steps to evict you. In some cases, the landlord may have a chance to fix a mistake. In other cases, the judge may ask your landlord to start the case over again.
+fields:
+  - "I was not named correctly on the complaint.": improper_name_yes
+    datatype: yesno
+  - "I was not properly notified about this case.": improper_notice_yes
+    datatype: yesno
+  - "How did the landlord fail to properly notify you about this case?": improper_notice
+    input type: area
+  - "I am in public housing and my landlord did not get the permission needed to evict me.": public_housing_yes
+    datatype: yesno
+---
+id: About your case
+question: |
+  About your case
+subquestion: |
+  If your landlord has failed to include facts in their complaint that would allow them to evict you, you may have a defense. If there are any specific facts in the complaint that you deny, please explain. Please answer honestly and to the best of your knowledge.
+fields:
+  - "I deny specific facts in the complaint.": facts_denied_yes
+    datatype: yesno
+  - "Please explain which facts in the complaint you deny.": facts_denied
+    input type: area
+  - "My landlord did not include facts in the complaint that would allow them to evict me.": failed_claim_yes
+    datatype: yesno
+  - "How did the complaint fail to state facts that would allow your landlord to evict you?": failed_claim
+    input type: area
+---
+id: Your rights as a tenant
+question: |
+  Your rights as a tenant
+subquestion: |
+  You have the right to legally withhold rent if your landlord has failed to keep the property in habitable condition and you have asked your landlord in writing to make the repairs and your local Board of Health has inspected the property and found violations and told your landlord; or you are current in your rent up until the time your landlord learned of the problem, you are not the cause of the problem, and the conditions do not require you to move out to make repairs.
+  
+  Examples of conditions that may make a property uninhabitable are cockroaches and rodents, plumbing issues, no hot water or not enough hot water, no heat or not enough heat, leaking roof, black mold, lead paint. 
+  It will be up to the judge or jury to decide if you qualify for this defense.
+fields:
+  - "I am legally withholding my rent.": withholding_yes
+    datatype: yesno
+  - "Why are you legally withholding rent?": withholding
+    input type: area
+  - "My landlord is trying to evict me for exercising my rights.": rights_yes
+    datatype: yesno
+  - "Please explain which rights you are trying to exercise.": rights
+    input type: area
+---
+id: Defenses against eviction
+question: |
+  Defenses against eviction
+subquestion: |
+  You may have a defense because of the COVID-19 emergency:
+  
+  • If your landlord has a federally funded mortgage or you live in federally assisted property covered by the CARE Act
+  
+  • If you have asked for help from RAFT or another rental help program and your rent is late because RAFT has not paid it yet
+  
+  • Your landlord did not send a copy of the “Form to Accompany the Residential Notice to Quit” (257 form)
+  
+  If you have been discriminated against, violation of the discrimination laws is a defense to an eviction, even if you are being evicted for a reason that the landlord says is your fault. A major principle of discrimination law that can be used to prevent an eviction is the requirement that landlords make reasonable accommodations for tenants with physical and mental disabilities. Discrimination may include:
+  
+  • Not wanting to rent to children (maybe because of lead paint)
+  
+  • Not wanting to make changes to rules or the property to help a tenant with a disability
+  
+  • Not wanting to accept a Section 8 voucher or other rental assistance
+  
+  • Treating someone unfairly because of race, sex, religion, veteran status, or gender or sexuality
+  
+  You may have a defense under the Violence Against Women Act. If you are a survivor of sexual assault, abuse, rape, or stalking and your landlord is evicting you for breaking your lease or changing your locks for safety reasons, you may have a defense. This will be up to the judge or jury.
+  
+  If your lease requires that your landlord give you a 30-day notice to quit for nonpayment of rent, but they did not give you a 30-day notice, you may have a defense. It is important for your landlord to file your case properly. 
+  
+  Your landlord may not have correctly followed Massachusetts Security Deposit laws. In MA, a landlord can only charge a tenant one month’s rent for a security deposit, and they have to give the tenant a receipt that shows the amount of the deposit. The deposit had to be kept in an interest-bearing account, and they have to let the tenant know which bank the deposit is being kept in as well as the bank account number.
+fields:
+  - "I have other defenses against eviction.": defenses_yes
+    datatype: yesno
+  - "What other defenses against eviction do you have?": defenses
+    input type: area
+---
+id: Counterclaims
+question: |
+  Counterclaims
+subquestion: |
+  If you believe that you are entitled to a return of part of your rent payment or other damages from your landlord, you may request a counterclaim against your landlord.
+fields:
+  - "How much money should you get in a counterclaim?": counterclaim_value
+    datatype: currency
+    min: 0
+  - "Why should you get money in a counterclaim?": counterclaim_reasons
+    input type: area
+  - "If I lose this case, I will need time to move.": moving_time_yes
+    datatype: yesno
+continue button field: Counterclaims
+---
+id: preview summary_process_answer
+question: |
+  Preview your form before you sign it
+subquestion: |
+  Here is a preview of the form you will sign on the next page.   
+  
+  ${ al_court_bundle.as_pdf(key='preview') }
+
+  Click the image to open it in a new tab. Click the "Edit answers" button
+  to edit your answers.
+
+  ${ action_button_html(url_action('review_summary_process_answer'), label='Edit answers', color='info') }
+  
+  Remember to come back to this window to continue and sign your form.
+continue button field: summary_process_answer_preview_question    
+---
+code: |
+  signature_fields = ['signature_users1']
+---
+code: |
+  summary_process_form_answer = DAEmpty()
+---
+code: |
+  # This is a placeholder for the addresses that will be searched
+  # for matching address to court. Edit if court venue is based on 
+  # a different address than the user's
+  addresses_to_search = [user.address for user in users]
+---
+id: summary process answer review screen
+event: review_summary_process_answer
+question: |
+  Review your answers
+review:
+  - Edit: trial_date
+    button: |
+      **Date of trial**:
+      ${ trial_date }
+  - Edit: trial_court
+    button: |
+      **Trial court**
+  
+      % if defined("trial_court.address.county"):
+      * address: ${ trial_court.address.block() }
+      % endif
+      % if defined("trial_court.division"):
+      * division: ${ trial_court.division }
+      % endif
+  - Edit: docket_number
+    button: |
+      **Docket number**:
+      ${ docket_number }
+  - Edit: plaintiffs.revisit
+    button: |
+      **Plaintiffs**
+
+      % for item in plaintiffs:
+        * ${ item }
+      % endfor
+  - Edit: users.revisit
+    button: |
+      **Users**
+
+      % for item in users:
+        * ${ item }
+      % endfor
+  - Edit: facts_denied_yes
+    button: |
+      **I deny specific facts in the complaint.**:
+      ${ word(yesno(facts_denied_yes)) }
+  - Edit: facts_denied
+    button: |
+      **Please explain which facts in the complaint you deny.**:
+      > ${ single_paragraph(facts_denied) }
+  - Edit: withholding_yes
+    button: |
+      **I am legally withholding my rent.**:
+      ${ word(yesno(withholding_yes)) }
+  - Edit: withholding
+    button: |
+      **Why are you legally withholding rent?**:
+      > ${ single_paragraph(withholding) }
+  - Edit: rights_yes
+    button: |
+      **My landlord is trying to evict me for exercising my rights.**:
+      ${ word(yesno(rights_yes)) }
+  - Edit: rights
+    button: |
+      **Please explain which rights you are trying to exercise.**:
+      > ${ single_paragraph(rights) }
+  - Edit: unexpired_yes
+    button: |
+      **My landlord has not told me they are ending my lease and my lease is not expired.**:
+      ${ word(yesno(unexpired_yes)) }
+  - Edit: unwritten_yes
+    button: |
+      **My landlord has not told me to leave the property and I do not have a written lease.**:
+      ${ word(yesno(unwritten_yes)) }
+  - Edit: paid_rent_yes
+    button: |
+      **If I have ever owed my landlord any rent, I have paid it within the time required by law.**:
+      ${ word(yesno(paid_rent_yes)) }
+  - Edit: improper_notice_yes
+    button: |
+      **I was not properly notified about this case.**:
+      ${ word(yesno(improper_notice_yes)) }
+  - Edit: improper_notice
+    button: |
+      **How did the landlord fail to properly notify you about this case?**:
+      > ${ single_paragraph(improper_notice) }
+  - Edit: failed_claim_yes
+    button: |
+      **My landlord did not include facts in the complaint that would allow them to evict me.**:
+      ${ word(yesno(failed_claim_yes)) }
+  - Edit: failed_claim
+    button: |
+      **How did the complaint fail to state facts that would allow your landlord to evict you?**:
+      > ${ single_paragraph(failed_claim) }
+  - Edit: other_parties_yes
+    button: |
+      **There are other people this case should be brought against.**:
+      ${ word(yesno(other_parties_yes)) }
+  - Edit: other_parties.revisit
+    button: |
+      **Other parties**
+
+      % for item in other_parties:
+        * ${ item }
+      % endfor
+  - Edit: improper_name_yes
+    button: |
+      **I was not named correctly on the complaint.**:
+      ${ word(yesno(improper_name_yes)) }
+  - Edit: other_sp_yes
+    button: |
+      **There is another summary process action against me right now.**:
+      ${ word(yesno(other_sp_yes)) }
+  - Edit: public_housing_yes
+    button: |
+      **I am in public housing and my landlord did not get the permission needed to evict me.**:
+      ${ word(yesno(public_housing_yes)) }
+  - Edit: defenses_yes
+    button: |
+      **I have other defenses against eviction.**:
+      ${ word(yesno(defenses_yes)) }
+  - Edit: defenses
+    button: |
+      **What other defenses against eviction do you have?**:
+      > ${ single_paragraph(defenses) }
+  - Edit: moving_time_yes
+    button: |
+      **If I lose this case, I will need time to move.**:
+      ${ word(yesno(moving_time_yes)) }
+  - Edit: counterclaim_value
+    button: |
+      **How much money should you get in a counterclaim?**:
+      ${ currency(counterclaim_value) }
+  - Edit: counterclaim_reasons
+    button: |
+      **Why should you get money in a counterclaim?**:
+      > ${ single_paragraph(counterclaim_reasons) }
+  - Edit: signature_users1
+    button: |
+      **signature_users1**:
+      ${ signature_users1 }
+  - Edit: summary_process_form_answer
+    button: |
+      **Summary process form answer**:
+      ${ summary_process_form_answer }
+---
+continue button field: plaintiffs.revisit
+question: |
+  Edit plaintiffs
+subquestion: |
+  ${ plaintiffs.table }
+
+  ${ plaintiffs.add_action() }
+---
+table: plaintiffs.table
+rows: plaintiffs
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+edit:
+  - name.first
+confirm: True
+
+---
+continue button field: users.revisit
+question: |
+  Edit users
+subquestion: |
+  ${ users.table }
+
+  ${ users.add_action() }
+---
+table: users.table
+rows: users
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+  - Address: |
+      row_item.address.block() if defined("row_item.address.address") else ""
+edit:
+  - name.first
+  - address.address
+confirm: True
+
+---
+continue button field: other_parties.revisit
+question: |
+  Edit other_parties
+subquestion: |
+  ${ other_parties.table }
+
+  ${ other_parties.add_action() }
+---
+table: other_parties.table
+rows: other_parties
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+edit:
+  - name.first
+confirm: True
+
+---
+id: download summary_process_answer
+event: summary_process_answer_download
+question: |
+  All done
+subquestion: |
+  Thank you ${users}. Your form is ready to download and deliver.
+  
+  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
+
+  ${ action_button_html(url_action('review_summary_process_answer'), label='Edit answers', color='info') }
+  
+  
+  ${ al_user_bundle.download_list_html() }
+  
+
+  ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
+
+progress: 100
+---
+# ALDocument objects specify the metadata for each template
+objects:
+  - summary_process_answer_Post_interview_instructions: ALDocument.using(title="Instructions", filename="summary_process_answer_next_steps.docx", enabled=True, has_addendum=False, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - summary_process_answer_attachment: ALDocument.using(title="Summary Process Answer Form - Housing Court", filename="summary_process_answer", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+---
+# Bundles group the ALDocuments into separate downloads, such as for court and for the user
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[summary_process_answer_Post_interview_instructions, summary_process_answer_attachment], filename="summary_process_answer", title="All forms to download for your records", enabled=True)
+  - al_court_bundle: ALDocumentBundle.using(elements=[summary_process_answer_attachment],  filename="summary_process_answer", title="All forms to deliver to court", enabled=True)
+---
+# Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
+# used for "preview" and "final" keys, and logic in the template checks the value of 
+# `i` to show or hide the user's signature
+attachments:
+  - name: Post-interview-Instructions
+    filename: summary_process_answer_next_steps
+    docx template file: summary_process_answer_next_steps.docx
+    variable name: summary_process_answer_Post_interview_instructions[i]
+  - name: summary process answer
+    filename: summary_process_answer
+    variable name: summary_process_answer_attachment[i]
+    skip undefined: True
+    pdf template file: summary_process_answer.pdf
+    fields:
+      - "trial_date": ${ trial_date.format() }
+      - "trial_court_county": ${ trial_court.address.county }
+      - "trial_court_division": ${ trial_court.division }
+      - "docket_number": ${ docket_number }
+      - "plaintiffs": ${ plaintiffs }
+      - "users1_name": ${ users[0] }
+      - "users1_name__1": ${ users[0] }
+      - "users1_name__2": ${ users[0] }
+      - "facts_denied_yes": ${ facts_denied_yes }
+      - "facts_denied": ${ attachment_name.safe_value("facts_denied") }
+      - "withholding_yes": ${ withholding_yes }
+      - "withholding": ${ attachment_name.safe_value("withholding") }
+      - "rights_yes": ${ rights_yes }
+      - "rights": ${ attachment_name.safe_value("rights") }
+      - "unexpired_yes": ${ unexpired_yes }
+      - "unwritten_yes": ${ unwritten_yes }
+      - "paid_rent_yes": ${ paid_rent_yes }
+      - "improper_notice_yes": ${ improper_notice_yes }
+      - "improper_notice": ${ attachment_name.safe_value("improper_notice") }
+      - "failed_claim_yes": ${ failed_claim_yes }
+      - "failed_claim": ${ attachment_name.safe_value("failed_claim") }
+      - "other_parties_yes": ${ other_parties_yes }
+      - "other_parties": ${ other_parties }
+      - "improper_name_yes": ${ improper_name_yes }
+      - "other_sp_yes": ${ other_sp_yes }
+      - "public_housing_yes": ${ public_housing_yes }
+      - "defenses_yes": ${ defenses_yes }
+      - "defenses": ${ attachment_name.safe_value("defenses") }
+      - "moving_time_yes": ${ moving_time_yes }
+      - "counterclaim_value": ${ currency(counterclaim_value) }
+      - "counterclaim_reasons": ${ attachment_name.safe_value("counterclaim_reasons") }
+      # It's a signature: test which file version this is; leave empty unless it's the final version)
+      - "signature_users1": ${ signature_users1 if i == "final" else '' }
+      - "users1_address_line_one": ${ users[0].address.line_one() }
+      - "users1_address_line_two": ${ users[0].address.line_two() }
+      - "summary_process_form_answer": ${ summary_process_form_answer }
+---
+code: |
+  summary_process_answer_attachment.overflow_fields["facts_denied"].overflow_trigger = 390
+  summary_process_answer_attachment.overflow_fields["facts_denied"].label = "Please explain which facts in the complaint you deny."
+  summary_process_answer_attachment.overflow_fields["withholding"].overflow_trigger = 308
+  summary_process_answer_attachment.overflow_fields["withholding"].label = "Why are you legally withholding rent?"
+  summary_process_answer_attachment.overflow_fields["rights"].overflow_trigger = 154
+  summary_process_answer_attachment.overflow_fields["rights"].label = "Please explain which rights you are trying to exercise."
+  summary_process_answer_attachment.overflow_fields["improper_notice"].overflow_trigger = 154
+  summary_process_answer_attachment.overflow_fields["improper_notice"].label = "How did the landlord fail to properly notify you about this case?"
+  summary_process_answer_attachment.overflow_fields["failed_claim"].overflow_trigger = 154
+  summary_process_answer_attachment.overflow_fields["failed_claim"].label = "How did the complaint fail to state facts that would allow your landlord to evict you?"
+  summary_process_answer_attachment.overflow_fields["defenses"].overflow_trigger = 231
+  summary_process_answer_attachment.overflow_fields["defenses"].label = "What other defenses against eviction do you have?"
+  summary_process_answer_attachment.overflow_fields["counterclaim_reasons"].overflow_trigger = 624
+  summary_process_answer_attachment.overflow_fields["counterclaim_reasons"].label = "Why should you get money in a counterclaim?"
+  summary_process_answer_attachment.overflow_fields.gathered = True
+
+
