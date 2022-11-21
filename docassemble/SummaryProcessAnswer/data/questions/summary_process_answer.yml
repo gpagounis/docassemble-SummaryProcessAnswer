@@ -91,7 +91,7 @@ code: |
   defenses_yes
   Counterclaims
   set_progress(70)
-  signature_users1
+  users[0].signature
   interview_order_summary_process_answer = True
 ---
 ###################### Main order ######################
@@ -114,7 +114,7 @@ code: |
   )
   summary_process_answer_preview_question
   basic_questions_signature_flow    
-  signature_users1
+  users[0].signature
   summary_process_answer_download
 ---
 comment: |
@@ -265,7 +265,7 @@ subquestion: |
 continue button field: summary_process_answer_preview_question    
 ---
 code: |
-  signature_fields = ['signature_users1']
+  signature_fields = ['users[0].signature']
 ---
 code: |
   summary_process_form_answer = DAEmpty()
@@ -408,10 +408,6 @@ review:
     button: |
       **Why should you get money in a counterclaim?**:
       > ${ single_paragraph(counterclaim_reasons) }
-  - Edit: signature_users1
-    button: |
-      **signature_users1**:
-      ${ signature_users1 }
   - Edit: summary_process_form_answer
     button: |
       **Summary process form answer**:
@@ -526,30 +522,30 @@ attachments:
       - "users1_name__1": ${ users[0] }
       - "users1_name__2": ${ users[0] }
       - "facts_denied_yes": ${ facts_denied_yes }
-      - "facts_denied": ${ attachment_name.safe_value("facts_denied") }
+      - "facts_denied": ${ summary_process_answer_attachment.safe_value("facts_denied") }
       - "withholding_yes": ${ withholding_yes }
-      - "withholding": ${ attachment_name.safe_value("withholding") }
+      - "withholding": ${ summary_process_answer_attachment.safe_value("withholding") }
       - "rights_yes": ${ rights_yes }
-      - "rights": ${ attachment_name.safe_value("rights") }
+      - "rights": ${ summary_process_answer_attachment.safe_value("rights") }
       - "unexpired_yes": ${ unexpired_yes }
       - "unwritten_yes": ${ unwritten_yes }
       - "paid_rent_yes": ${ paid_rent_yes }
       - "improper_notice_yes": ${ improper_notice_yes }
-      - "improper_notice": ${ attachment_name.safe_value("improper_notice") }
+      - "improper_notice": ${ summary_process_answer_attachment.safe_value("improper_notice") }
       - "failed_claim_yes": ${ failed_claim_yes }
-      - "failed_claim": ${ attachment_name.safe_value("failed_claim") }
+      - "failed_claim": ${ summary_process_answer_attachment.safe_value("failed_claim") }
       - "other_parties_yes": ${ other_parties_yes }
       - "other_parties": ${ other_parties }
       - "improper_name_yes": ${ improper_name_yes }
       - "other_sp_yes": ${ other_sp_yes }
       - "public_housing_yes": ${ public_housing_yes }
       - "defenses_yes": ${ defenses_yes }
-      - "defenses": ${ attachment_name.safe_value("defenses") }
+      - "defenses": ${ summary_process_answer_attachment.safe_value("defenses") }
       - "moving_time_yes": ${ moving_time_yes }
       - "counterclaim_value": ${ currency(counterclaim_value) }
-      - "counterclaim_reasons": ${ attachment_name.safe_value("counterclaim_reasons") }
+      - "counterclaim_reasons": ${ summary_process_answer_attachment.safe_value("counterclaim_reasons") }
       # It's a signature: test which file version this is; leave empty unless it's the final version)
-      - "signature_users1": ${ signature_users1 if i == "final" else '' }
+      - "signature_users1": ${ users[0].signature if i == "final" else '' }
       - "users1_address_line_one": ${ users[0].address.line_one() }
       - "users1_address_line_two": ${ users[0].address.line_two() }
       - "summary_process_form_answer": ${ summary_process_form_answer }
