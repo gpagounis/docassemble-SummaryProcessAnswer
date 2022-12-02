@@ -33,7 +33,7 @@ data:
     - "Housing Court"
   categories:
     - "HO-00-00-00-00"
-  typical role: "defendant"
+  user_ask_role: "defendant"
   generate download screen: True
 ---
 code: |
@@ -71,7 +71,7 @@ code: |
   # Set the allowed courts for this interview
   allowed_courts = interview_metadata["summary_process_answer"]["allowed courts"]
   nav.set_section("review_summary_process_answer")
-  user_role = "defendant"
+  user_ask_role = "defendant"
   users.gather()
   set_parts(subtitle=str(users))
   users[0].address.address
@@ -139,7 +139,7 @@ id: About your tenancy
 question: |
   About your tenancy
 subquestion: |
-  Answer these questions about your tenancy to the best of your ability. Your answers will help determine if you have a possible defense against your landlord in this case.
+  Answer these questions about your tenancy to the best of your ability. Your answers will help determine if you have a possible defense against your landlord in this case. Please select any and all that apply to your case. If none of these choices applies to you, click the "Next" button.
 fields:
   - "There is another summary process action against me right now.": other_sp_yes
     datatype: yesno
@@ -159,28 +159,47 @@ subquestion: |
   Answer these questions about how you were notified about this case. Only a judge can decide if your landlord did not follow the proper steps to evict you. In some cases, the landlord may have a chance to fix a mistake. In other cases, the judge may ask your landlord to start the case over again.
 fields:
   - "I was not named correctly on the complaint.": improper_name_yes
-    datatype: yesno
+    choices:
+      - Yes
+      - No
   - "I was not properly notified about this case.": improper_notice_yes
-    datatype: yesno
+    choices:
+      - Yes
+      - No
   - "How did the landlord fail to properly notify you about this case?": improper_notice
     input type: area
+    show if:
+      variable: improper_notice_yes
+      is: Yes
   - "I am in public housing and my landlord did not get the permission needed to evict me.": public_housing_yes
-    datatype: yesno
+    choices:
+      - Yes
+      - No
 ---
-id: About your case
+id: About the complaint
 question: |
-  About your case
+  About the complaint
 subquestion: |
   If your landlord has failed to include facts in their complaint that would allow them to evict you, you may have a defense. If there are any specific facts in the complaint that you deny, please explain. Please answer honestly and to the best of your knowledge.
 fields:
   - "I deny specific facts in the complaint.": facts_denied_yes
-    datatype: yesno
+    choices:
+      - Yes
+      - No
   - "Please explain which facts in the complaint you deny.": facts_denied
     input type: area
+    show if: 
+      variable: facts_denied_yes
+      is: Yes
   - "My landlord did not include facts in the complaint that would allow them to evict me.": failed_claim_yes
-    datatype: yesno
+    choices:
+      - Yes
+      - No
   - "How did the complaint fail to state facts that would allow your landlord to evict you?": failed_claim
     input type: area
+    show if:
+      variable: failed_claim_yes
+      is: Yes
 ---
 id: Your rights as a tenant
 question: |
@@ -189,16 +208,27 @@ subquestion: |
   You have the right to legally withhold rent if your landlord has failed to keep the property in habitable condition and you have asked your landlord in writing to make the repairs and your local Board of Health has inspected the property and found violations and told your landlord; or you are current in your rent up until the time your landlord learned of the problem, you are not the cause of the problem, and the conditions do not require you to move out to make repairs.
   
   Examples of conditions that may make a property uninhabitable are cockroaches and rodents, plumbing issues, no hot water or not enough hot water, no heat or not enough heat, leaking roof, black mold, lead paint. 
+  
   It will be up to the judge or jury to decide if you qualify for this defense.
 fields:
   - "I am legally withholding my rent.": withholding_yes
-    datatype: yesno
+    choices:
+      - Yes
+      - No
   - "Why are you legally withholding rent?": withholding
     input type: area
+    show if:
+      variable: withholding_yes
+      is: Yes
   - "My landlord is trying to evict me for exercising my rights.": rights_yes
-    datatype: yesno
+    choices:
+      - Yes
+      - No
   - "Please explain which rights you are trying to exercise.": rights
     input type: area
+    show if:
+      variable: rights_yes
+      is: Yes
 ---
 id: Defenses against eviction
 question: |
@@ -229,9 +259,14 @@ subquestion: |
   Your landlord may not have correctly followed Massachusetts Security Deposit laws. In MA, a landlord can only charge a tenant one month’s rent for a security deposit, and they have to give the tenant a receipt that shows the amount of the deposit. The deposit had to be kept in an interest-bearing account, and they have to let the tenant know which bank the deposit is being kept in as well as the bank account number.
 fields:
   - "I have other defenses against eviction.": defenses_yes
-    datatype: yesno
-  - "What other defenses against eviction do you have?": defenses
+    choices:
+      - Yes
+      - No
+  - "Please explain what other defenses you have.": defenses
     input type: area
+    show if:
+      variable: defenses_yes
+      is: Yes
 ---
 id: Counterclaims
 question: |
@@ -242,7 +277,7 @@ fields:
   - "How much money should you get in a counterclaim?": counterclaim_value
     datatype: currency
     min: 0
-  - "Why should you get money in a counterclaim?": counterclaim_reasons
+  - "Explain why you should get money in a counterclaim.": counterclaim_reasons
     input type: area
   - "If I lose this case, I will need time to move.": moving_time_yes
     datatype: yesno
